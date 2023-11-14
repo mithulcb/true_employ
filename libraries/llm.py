@@ -180,8 +180,8 @@ def get_csv (file_path,id,ques_list_return,ans_list_return):
 
 
 def send_mail(question_list,email):
-    user = 'mithulcb@gmail.com'
-    app_password = 'thoristhebest1234' # a token for gmail
+    user = ''
+    app_password = '' # a token for gmail
     to=email
     content = ''
     subject = 'Questions for interview'
