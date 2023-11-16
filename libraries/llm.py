@@ -14,6 +14,7 @@ import os
 from transformers import AutoModel
 import yagmail
 import pymysql
+import sys
 
 
 def load_llm():
@@ -129,17 +130,8 @@ def llm_pipeline(file_path):
     return answer_generation_chain, filtered_ques_list
 
 
-def get_csv (file_path,id,ques_list_return,ans_list_return):
+def get_csv (file_path,id):
 
-    connection = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='',
-    db='Quiz_Database',
-    use_unicode=True,
-    charset="utf8")
-
-    
     answer_generation_chain, ques_list = llm_pipeline(file_path)
     quest_db = ans_db = ''
     base_folder = 'static/output/'
@@ -152,12 +144,10 @@ def get_csv (file_path,id,ques_list_return,ans_list_return):
 
         for question in ques_list:
             print("Question: ", question)
-            ques_list_return.append(question)
             question += "&"
             quest_db += question
             answer = answer_generation_chain.run(question)
             print("Answer: ", answer)
-            ans_list_return.append(answer)
             answer += "&"
             ans_db += answer
             print("--------------------------------------------------\n\n")
@@ -181,7 +171,7 @@ def get_csv (file_path,id,ques_list_return,ans_list_return):
 
 def send_mail(question_list,email):
     user = 'mithulcb@gmail.com'
-    app_password = 'thoristhebest1234' # a token for gmail
+    app_password = 'givd kvme dzcl bgyq ' # a token for gmail
     to=email
     content = ''
     subject = 'Questions for interview'
@@ -193,4 +183,25 @@ def send_mail(question_list,email):
         print('Sent email successfully')
 
 if __name__ == "__main__":
-    get_csv("CV/temp.pdf",100)
+
+    connection = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='',
+    db='Quiz_Database',
+    use_unicode=True,
+    charset="utf8")
+
+    # path_to_res=sys.argv[1]
+    # id = int(sys.argv[2])
+    path_to_res = "CV/temp.pdf"
+    id = 121
+
+    cursor = connection.cursor()
+    qry = 'UPDATE student_profile set flag = {} where stud_id = {}'
+    qry = qry.format(1,id)
+    cursor.execute(qry)
+    connection.commit()
+
+
+    get_csv(path_to_res,id)

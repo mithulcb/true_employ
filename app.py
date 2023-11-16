@@ -30,12 +30,20 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.naive_bayes import MultinomialNB
 from libraries.test_utils import *
 from libraries.resume_utils import cleanResume
-from libraries.llm import *
-import threading
+from libraries.semantic_score import *
+from subprocess import PIPE, Popen 
+import tensorflow as tf       
+import tensorflow_hub as hub  
+from numpy import dot                                           
+from numpy.linalg import norm      
+import numpy as np
+import pandas as pd
 
 
 UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER_TEMP = "uploads_temp"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+ALLOWED_EXTENSIONS_ANS = {'txt'}
 
 app = Flask(__name__)
 app.debug = True
@@ -496,10 +504,43 @@ def settings():
 
 
 @app.route("/studentinterview.html")
-def interviewgenerator():
+def studentinterview():
+    
     return render_template("/studentinterview.html")
 
-
+@app.route("/post_answer", methods=['POST'])
+def post_answer():
+    id = session['id']
+    if request.method == 'POST':
+        answer = request.files['answer']
+        if answer and allowed_ans_file(answer.filename):
+            filename = secure_filename(answer.filename)
+            answer.save(os.path.join("uploads_temp", filename))
+            session['answer'] = secure_filename(answer.filename)
+            flash("Thanks for answering the questions!")
+            path_to_ans = os.path.join("uploads_temp", session['answer'])
+            f = open(path_to_ans,"r")
+            answer = f.read()
+            answer = re.sub(r"\n+","&",answer)
+            cursor = connection.cursor()
+            qry = 'UPDATE student_profile set stud_answer = "{}" where stud_id = {}'
+            qry = qry.format(answer,session["id"])
+            cursor.execute(qry)
+            connection.commit()
+            qry = 'select stud_answer,answer from student_profile where stud_id={}'
+            qry = qry.format(session['id'])
+            cursor.execute(qry)
+            res = cursor.fetchall()
+            ques,ans = res[0][0],res[0][1]
+            ques_l = ques.split("&")
+            ans_l = ans.split("&")
+            score = calculate_score(ques_l,ans_l)
+            qry = 'UPDATE student_profile set score = {} where stud_id = {}'
+            qry = qry.format(score,session["id"])
+            cursor.execute(qry)
+            connection.commit()
+            
+        return redirect("/studenthome.html")
 
 @app.route("/selectquestionpaper")
 def selques():
@@ -740,10 +781,9 @@ def post_profile():
             filename = secure_filename(cv.filename)
             cv.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             session['cv'] = secure_filename(cv.filename)
-            path_to_res = os.path.join(app.config['UPLOAD_FOLDER'], session['cv'])
-            thread = threading.Thread(target=get_csv, args=(path_to_res,session['id']))
-            thread.start()
-            
+            # path_to_res = os.path.join(app.config['UPLOAD_FOLDER'], session['cv'])
+            # cmd = 'python -u "c:/Users/Mithul/Desktop/vsc/CAPSTONE_V2/webapp_main/libraries/llm.py" {} {}'.format(path_to_res,session['id'])
+            # process_machine = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, text=True)
         flash("Thanks for registering!")
         return redirect("/studenthome.html")
     connection.close()
@@ -1246,6 +1286,10 @@ def update_user():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def allowed_ans_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_ANS
 
 
 @app.route("/imagequestion", methods=['GET', 'POST'])

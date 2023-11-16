@@ -170,13 +170,18 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        <div class="intro offset-lg-1 col-lg-10 text-center mb-80">
-                <h3>Interview Generator</h3>
-                <p>Please click <a href="index.html">this link</a> to check your personality.</p>
-                <p style="    text-align: justify;"> </p>
-            </div>
         {% block body %}{% endblock %}
             </div>
+            
+            <form role="form" action="" method="post" enctype="multipart/form-data">
+            <div class="form-group row" action="/req" >
+              <div class="col-md-3"><label for="name">ANSWERS</label></div>
+                <b>Upload Your Answers Please:</b> <input type="file" name="answer">
+            </div>
+            <div class="box-footer">
+              <button type="submit" class="btn btn-primary pull-right" formaction="/post_answer">Submit</button>
+            </div>
+          </form>
             <!-- /.box-body -->
           </div>
           <!-- /.box -->

@@ -1,3 +1,8 @@
-./CV
-./uploads
-./pycache
+CV
+uploads
+pycache
+uploads_temp
+dataset
+temp.py
+temp.txt
+requirements1.txt
