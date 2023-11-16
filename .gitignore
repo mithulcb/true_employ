@@ -1,6 +1,6 @@
 CV
 uploads
-pycache
+__pycache__
 uploads_temp
 dataset
 temp.py
