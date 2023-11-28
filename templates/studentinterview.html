@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>WeEmploy</title>
+  <title>ApexTalent</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="{{ url_for('static', filename='dist/adminlte.min.css') }}">
@@ -172,8 +172,19 @@
         {% endwith %}
         {% block body %}{% endblock %}
             </div>
-            
-            <form role="form" action="" method="post" enctype="multipart/form-data">
+            <h1>Questions</h1>
+            <form method="post" action="/post_answer">
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <label for="answer_{{ loop.index }}">{{ question }}</label><br>
+                    <textarea id="answer_{{ loop.index }}" name="answers[]" rows="4" cols="50" required></textarea>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Submit Answers</button>
+    </form>
+            <!-- <form role="form" action="" method="post" enctype="multipart/form-data">
             <div class="form-group row" action="/req" >
               <div class="col-md-3"><label for="name">ANSWERS</label></div>
                 <b>Upload Your Answers Please:</b> <input type="file" name="answer">
@@ -181,7 +192,7 @@
             <div class="box-footer">
               <button type="submit" class="btn btn-primary pull-right" formaction="/post_answer">Submit</button>
             </div>
-          </form>
+          </form> -->
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
@@ -206,7 +217,7 @@
         <b>Version</b> 1.0
       </div>
       <strong>Copyright &copy; 2019
-        <a href="aboutus.html">WeEmploy.com</a>.</strong> All rights reserved.
+        <a href="aboutus.html">ApexTalent.com</a>.</strong> All rights reserved.
     </footer>
 
 

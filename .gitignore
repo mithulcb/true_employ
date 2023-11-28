@@ -2,7 +2,9 @@ CV
 uploads
 __pycache__
 uploads_temp
+uploads_bei
 dataset
 temp.py
 temp.txt
 requirements1.txt
+libraries/__pycache__

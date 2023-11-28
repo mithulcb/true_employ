@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>WeEmploy</title>
+  <title>ApexTalent</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="{{ url_for('static', filename='dist/adminlte.min.css') }}">
@@ -117,6 +117,12 @@
           </li>
 
           <li>
+            <a href="/studentbeiinterview.html">
+              <i class="fa fa-users"></i> <span>Behaviour Interview</span>
+            </a>
+          </li>
+
+          <li>
             <a href="/settings.html">
               <i class="fa fa-cog"></i> <span>Settings</span>
             </a>
@@ -173,6 +179,9 @@
         <div class="intro offset-lg-1 col-lg-10 text-center mb-80">
                 <h3>Web Assessment Platform</h3>
                 <p>Please click <a href="index.html">this link</a> to check your personality.</p>
+                <form action="/interview_gen" method="post">
+                  <button type="submit">Run Interview Generator</button>
+                </form>
                 <p style="    text-align: justify;"> </p>
             </div>
         {% block body %}{% endblock %}
@@ -201,7 +210,7 @@
         <b>Version</b> 1.0
       </div>
       <strong>Copyright &copy; 2019
-        <a href="aboutus.html">WeEmploy.com</a>.</strong> All rights reserved.
+        <a href="aboutus.html">ApexTalent.com</a>.</strong> All rights reserved.
     </footer>
 
 

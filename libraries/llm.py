@@ -17,6 +17,14 @@ import pymysql
 import sys
 
 
+connection = pymysql.connect(
+host='localhost',
+user='root',
+password='',
+db='Quiz_Database',
+use_unicode=True,
+charset="utf8")
+
 def load_llm():
     llm = CTransformers(
         model = "TheBloke/Mistral-7B-Instruct-v0.1-GGUF",
@@ -71,6 +79,7 @@ def llm_pipeline(file_path):
     You are an interviewer.
     Your objective is to assess a candidate's qualifications and suitability for the position by asking questions related to the candidate's resume. 
     You should frame questions that explore the candidate's skills, experiences, and achievements as outlined in their resume.
+    The questions should be of the kind that you as an interviewer should be able to asnwer them as well.
     You do this by asking questions about the text below which corresponds to the resume:
 
     ------------
@@ -161,42 +170,37 @@ def get_csv (file_path,id):
     print(qry)
     cursor.execute(qry)
     connection.commit()
-    command = "select stud_email from student_profile where stud_id ={}"
-    command = command.format(id)
-    cursor.execute(command)
-    email = cursor.fetchone()[0]
-    send_mail(ques_list,email)
-    return output_file
+    # command = "select stud_email from student_profile where stud_id ={}"
+    # command = command.format(id)
+    # cursor.execute(command)
+    # email = cursor.fetchone()[0]
+    # send_mail(ques_list,email)
+    # return output_file
 
 
-def send_mail(question_list,email):
-    user = ''
-    app_password = '' # a token for gmail
-    to=email
-    content = ''
-    subject = 'Questions for interview'
-    for i in question_list:
-        content += i +'\n'
-    content += "\n\n**********Please Answer The Questions With Respect To Information In Your Resume**********"
-    with yagmail.SMTP(user, app_password) as yag:
-        yag.send(to, subject, content)
-        print('Sent email successfully')
+# def send_mail(question_list,email):
+#     user = 'mithulcb@gmail.com'
+#     app_password = 'givd kvme dzcl bgyq' # a token for gmail
+#     to=email
+#     content = ''
+#     subject = 'Questions for interview'
+#     for i in question_list:
+#         content += i +'\n'
+#     content += "\n\n**********Please Answer The Questions With Respect To Information In Your Resume**********"
+#     with yagmail.SMTP(user, app_password) as yag:
+#         yag.send(to, subject, content)
+#         print('Sent email successfully')
 
-if __name__ == "__main__":
+def run_llm(path_to_res,id):
 
-    connection = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='',
-    db='Quiz_Database',
-    use_unicode=True,
-    charset="utf8")
+
 
     # path_to_res=sys.argv[1]
     # id = int(sys.argv[2])
-    path_to_res = "CV/temp.pdf"
-    id = 121
+    # path_to_res = "CV/temp.pdf"
+    # id = 121
 
+    get_csv(path_to_res,id)
     cursor = connection.cursor()
     qry = 'UPDATE student_profile set flag = {} where stud_id = {}'
     qry = qry.format(1,id)
@@ -204,4 +208,3 @@ if __name__ == "__main__":
     connection.commit()
 
 
-    get_csv(path_to_res,id)

@@ -46,11 +46,14 @@
 
                   <p>
                     [User]
-                    <small>Admin</small>
+                    <small>Applicant</small>
                   </p>
                 </li>
                 <!-- Menu Footer-->
                 <li class="user-footer">
+                  <div class="pull-left">
+                    <a href="/viewprofile" class="btn btn-default btn-flat">Profile</a>
+                  </div>
                   <div class="pull-right">
                     <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
                   </div>
@@ -73,38 +76,48 @@
           <div class="pull-left info">
             <p>User</p>
             <a href="#">
-              <i class="fa fa-circle text-success"></i> Admin</a>
+              <i class="fa fa-circle text-success"></i> Applicant</a>
           </div>
-        </div>
+        </div> 
 
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">MAIN NAVIGATION</li>
-          <li >
-            <a href="/adminhome.html">
+          <li class="active">
+            <a href="/studenthome.html">
               <i class="fa fa-home"></i> <span>Home</span>
             </a>
           </li>
-          <li class="treeview">
-            <a href="#">
-              <i class="fa fa-building"></i>
-              <span>PersonnelManagement</span>
-              <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
+          <li >
+            <a href="/viewprofile">
+              <i class="fa fa-users"></i> <span>Profile</span>
             </a>
-            <ul class="treeview-menu">
-              <li id="menu-add-new-device"><a href="/adminaddinstructor"><i class="fa fa-circle-o"></i> Add Personnel</a></li>
-              <li id="menu-view-all-device"><a href="/adminviewinstructor"><i class="fa fa-circle-o"></i> View Personnel</a></li>
-            </ul>
           </li>
           <li>
-            <a href="/adminstudentmanage">
-              <i class="fa fa-users"></i> <span>Applicant Management</span>
+            <a href="/startquiz.html">
+              <i class="fa fa-users"></i> <span>Assessment</span>
             </a>
           </li>
-          <li class="active">
-            <a href="/adminsettings.html">
+          <li>
+            <a href="/adddesc">
+              <i class="fa fa-cog"></i> <span>Tell us more</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/reportgeneration">
+              <i class="fa fa-users"></i> <span>Report</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/studentinterview.html">
+              <i class="fa fa-users"></i> <span>Interview</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/settings.html">
               <i class="fa fa-cog"></i> <span>Settings</span>
             </a>
           </li>
@@ -118,19 +131,17 @@
       <!-- Content Header (Page header) -->
 
 
-
-
-
       <section class="content-header">
         <h1>
-          Settings
+          Dashboard
+          <small>Control panel</small>
         </h1>
         <ol class="breadcrumb">
           <li>
             <a href="#">
               <i class="fa fa-dashboard"></i> Home</a>
           </li>
-          <li class="active">Settings</li>
+          <li class="active">Dashboard</li>
         </ol>
       </section>
 
@@ -142,14 +153,14 @@
 
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Settings</h3>
+              <h3 class="box-title">Home</h3>
             </div>
             <!-- /.box-header -->
-
+            
             <div class="box-body">
-     	    {% with messages = get_flashed_messages() %}
-		    {% if messages %}
-		    {% for message in messages %}
+          {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
             <div class="alert alert-info alert-dismissible" role="alert" style="margin-left: 10px;margin-right: 10px;margin-top: 5px;">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                         aria-hidden="true">×</span>
@@ -157,29 +168,20 @@
                 {{message}}
             </div>
             {% endfor %}
-		    {% endif %}
-		    {% endwith %}
-            <form role="form" method="post" id="passwordForm1">
-              <div class="box-body">
-                    <div class="form-group row">
-                      <div class="col-md-3"><label>New Password</label></div>
-                      <div class="col-md-9"><input type="text" class="form-control" name="password1" id="password3"
-                                   placeholder="New Password" autocomplete="off"></div>
-                    </div>
-                    <div class="form-group row">
-                      <div class="col-md-3"><label>Phone Number</label></div>
-                      <div class="col-md-9"><input type="text" class="form-control" name="password2" id="password2"
-                                   placeholder="Repeat Password" autocomplete="off"></div>
-                    </div>
-              </div>
-              <!-- /.box-body -->
-
-              <div class="box-footer">
-                <button type="submit" class="btn btn-primary pull-right" formaction="/change_password" data-loading-text="Changing Password...">Submit</button>
-              </div>
-            </form>
-		    {% block body %}{% endblock %}
+        {% endif %}
+        {% endwith %}
+        {% block body %}{% endblock %}
             </div>
+            
+            <form role="form" action="" method="post" enctype="multipart/form-data">
+            <div class="form-group row" action="/req" >
+              <div class="col-md-3"><label for="name">BEI ANSWERS</label></div>
+                <b>Upload Your Answers Please:</b> <input type="file" name="answer">
+            </div>
+            <div class="box-footer">
+              <button type="submit" class="btn btn-primary pull-right" formaction="/post_bei_answer">Submit</button>
+            </div>
+          </form>
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
@@ -188,9 +190,6 @@
       </div>
       <!-- /.row -->
     </section>
-
-
-
 
 
 
