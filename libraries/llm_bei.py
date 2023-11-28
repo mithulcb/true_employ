@@ -15,6 +15,14 @@ from transformers import AutoModel
 import yagmail
 import pymysql
 
+connection = pymysql.connect(
+host='localhost',
+user='root',
+password='',
+db='Quiz_Database',
+use_unicode=True,
+charset="utf8")
+
 
 MBTI_TYPES = {
 "ISTJ":"Quiet, serious, earn success by being thorough and dependable. Practical, matter-of-fact, realistic, and responsible. Decide logically what should be done and work toward it steadily, regardless of distractions. Take pleasure in making everything orderly and organized—their work, their home, their life. Value traditions and loyalty.",
@@ -132,38 +140,28 @@ def get_bei (personality,id):
     print(qry)
     cursor.execute(qry)
     connection.commit()
-    command = "select stud_email from student_profile where stud_id ={}"
-    command = command.format(id)
-    cursor.execute(command)
-    email = cursor.fetchone()[0]
-    send_mail(ques_list,email)
     return output_file
 
 
-def send_mail(question_list,email):
-    user = ''
-    app_password = 'givd kvme dzcl bgyq' # a token for gmail
-    to=email
-    content = ''
-    subject = 'Questions for interview'
-    for i in question_list:
-        content += i +'\n'
-    content += "\n\n**********Please Answer The Questions With Keywords As Much As Possible**********"
-    with yagmail.SMTP(user, app_password) as yag:
-        yag.send(to, subject, content)
-        print('Sent email successfully')
+# def send_mail(question_list,email):
+#     user = ''
+#     app_password = 'givd kvme dzcl bgyq' # a token for gmail
+#     to=email
+#     content = ''
+#     subject = 'Questions for interview'
+#     for i in question_list:
+#         content += i +'\n'
+#     content += "\n\n**********Please Answer The Questions With Keywords As Much As Possible**********"
+#     with yagmail.SMTP(user, app_password) as yag:
+#         yag.send(to, subject, content)
+#         print('Sent email successfully')
 
-if __name__ == "__main__":
-    connection = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='',
-    db='Quiz_Database',
-    use_unicode=True,
-    charset="utf8")
-    
-    # personlaity=sys.argv[1]
-    # id = int(sys.argv[2])
-    personlaity = "ISTJ"
-    id = 121
-    get_bei(personlaity,id)
+def run_bei(personality,id):
+    # personlaity = "ISTJ"
+    # id = 121
+    cursor = connection.cursor()
+    get_bei(personality,id)
+    qry = 'UPDATE student_profile set bei_flag = {} where stud_id = {}'
+    qry = qry.format(1,id)
+    cursor.execute(qry)
+    connection.commit()

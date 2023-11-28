@@ -32,6 +32,7 @@ from libraries.test_utils import *
 from libraries.resume_utils import cleanResume
 from libraries.semantic_score import *
 from libraries.llm import *
+from libraries.llm_bei import *
 from subprocess import PIPE, Popen 
 import tensorflow as tf       
 import tensorflow_hub as hub  
@@ -588,46 +589,50 @@ def post_answer():
     
 @app.route("/studentbeiinterview.html")
 def studentbeiinterview():
+    cursor = connection.cursor()
+    qry = "select bei_flag from student_profile where stud_id = {}"
+    qry = qry.format(session['id'])
+    print(qry)
+    cursor.execute(qry)
+    res = cursor.fetchone()[0]
+    if int(res) == 1: 
+        qry = "select bei_question from student_profile where stud_id = {}"
+        qry = qry.format(session['id'])
+        cursor.execute(qry)
+        res = cursor.fetchone()[0]
+        questions = res.split("&")
+        questions = questions[:-1]
+        return render_template("/studentbeiinterview.html",questions = questions)
+    else:
+        flash("Please Wait!","Your interview is being generated. Approximately 30 mins.")
+        return render_template("/studenthome.html")
     
-    return render_template("/studentbeiinterview.html")
+    
 
 @app.route("/post_bei_answer", methods=['POST'])
 def post_bei_answer():
     id = session['id']
     if request.method == 'POST':
-        answer = request.files['answer']
-        if answer and allowed_ans_file(answer.filename):
-            filename = secure_filename(answer.filename)
-            answer.save(os.path.join("uploads_bei", filename))
-            session['answer'] = secure_filename(answer.filename)
-            flash("Thanks for answering the questions!")
-            path_to_ans = os.path.join("uploads_bei", session['answer'])
-            f = open(path_to_ans,"r")
-            answer = f.read()
-            answer = re.sub(r"\n+","&",answer)
-            cursor = connection.cursor()
-            qry = 'UPDATE student_profile set bei_answer = "{}" where stud_id = {}'
-            qry = qry.format(answer,session["id"])
-            cursor.execute(qry)
-            connection.commit()
-            qry = 'select bei_answer from student_profile where stud_id={}'
-            qry = qry.format(session['id'])
-            cursor.execute(qry)
-            res = cursor.fetchall()
-            ans = res[0][0]
-            ans_l = ans.split("&")
-            qry = 'select personality from student_profile where stud_id={}'
-            qry = qry.format(session['id'])
-            cursor.execute(qry)
-            personality = cursor.fetchall()
-            personality = personality[0][0]
-            print(personality)
-            qualities = len(ans_l) * [MBTI_TYPES[personality]]
-            bei_score = calculate_score(ans_l,qualities)
-            qry = 'UPDATE student_profile set bei_score = {} where stud_id = {}'
-            qry = qry.format(bei_score,session["id"])
-            cursor.execute(qry)
-            connection.commit()
+        flash("Thanks for answering the questions!")
+        submitted_answers = request.form.getlist('answers[]')
+        answer = "&".join(submitted_answers)
+        cursor = connection.cursor()
+        qry = 'UPDATE student_profile set bei_answer = "{}" where stud_id = {}'
+        qry = qry.format(answer,session["id"])
+        cursor.execute(qry)
+        connection.commit()
+        qry = 'select personality from student_profile where stud_id={}'
+        qry = qry.format(session['id'])
+        cursor.execute(qry)
+        personality = cursor.fetchall()
+        personality = personality[0][0]
+        print(personality)
+        qualities = len(submitted_answers) * [MBTI_TYPES[personality]]
+        bei_score = calculate_score(submitted_answers,qualities)
+        qry = 'UPDATE student_profile set bei_score = {} where stud_id = {}'
+        qry = qry.format(bei_score,session["id"])
+        cursor.execute(qry)
+        connection.commit()
             
         return redirect("/studenthome.html")
 
@@ -885,6 +890,24 @@ def interview_gen():
     # cmd = 'python -u "c:/Users/Mithul/Desktop/vsc/CAPSTONE_V2/webapp_main/libraries/llm.py" {} {}'.format(path_to_res,session['id'])
     # process_machine = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, text=True)
 
+@app.route('/bei_interview_gen', methods = ['POST'])
+def bei_interview_gen():
+    cursor = connection.cursor()
+    id = session['id']
+    qry = 'select personality from student_profile where stud_id={}'
+    qry = qry.format(session['id'])
+    cursor.execute(qry)
+    personality = cursor.fetchall()
+    print(personality)
+    if not personality[0][0]:
+        print("here")
+        flash("Please complete Twitter Analysis first to proceed.")
+        return render_template("/studenthome.html")
+    personality = personality[0][0]
+    background_bei = Process(target= run_llm , args= (personality,id))
+    background_bei.start()
+    flash("Questions being generated. Thank you for your patience!!")
+    return redirect("/studenthome.html")
 
 @app.route('/change_password', methods=['POST'])  # change password
 def change_password():

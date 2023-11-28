@@ -172,8 +172,20 @@
         {% endwith %}
         {% block body %}{% endblock %}
             </div>
+            <h1>Questions</h1>
+            <form method="post" action="/post_bei_answer">
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <label for="answer_{{ loop.index }}">{{ question }}</label><br>
+                    <textarea id="answer_{{ loop.index }}" name="answers[]" rows="4" cols="50" required></textarea>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Submit Answers</button>
+    </form>
             
-            <form role="form" action="" method="post" enctype="multipart/form-data">
+            <!-- <form role="form" action="" method="post" enctype="multipart/form-data">
             <div class="form-group row" action="/req" >
               <div class="col-md-3"><label for="name">BEI ANSWERS</label></div>
                 <b>Upload Your Answers Please:</b> <input type="file" name="answer">
@@ -181,7 +193,7 @@
             <div class="box-footer">
               <button type="submit" class="btn btn-primary pull-right" formaction="/post_bei_answer">Submit</button>
             </div>
-          </form>
+          </form> -->
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
