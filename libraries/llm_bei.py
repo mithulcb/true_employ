@@ -165,3 +165,4 @@ def run_bei(personality,id):
     qry = qry.format(1,id)
     cursor.execute(qry)
     connection.commit()
+    connection.close()

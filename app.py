@@ -441,10 +441,12 @@ def startquiz():
             name = row[0] if row else None
             session['paper'] = name
             qry = "insert into active_question_paper(question_paper_id, question_id, question_type, stud_id, attend) select question_paper.question_paper_id, question_paper.question_id, question_paper.question_type,'%s','0'from question_paper WHERE question_paper.question_paper_id = '%s'"
+            print("here"*10)
             cursor.execute(qry, (session['id'], session['paper']))
             connection.commit()
             return render_template("/startquiz.html")
         else:
+            print("there"*10)
             qry = "select question_paper_id from active_question_paper where stud_id = %s and attend ='0'"
             cursor.execute(qry, session['id'])
             row = cursor.fetchone()
@@ -462,13 +464,16 @@ def quiz():
     cursor.execute(qry1)
     row = cursor.fetchone()
     name = row[0] if row else None
+    print(name)
     result = name
     if result == 0:
+        print(1*"100")
         qry1 = "delete from active_question_paper where question_paper_id = %s"
         cursor.execute(qry1, (session['paper'],))
         connection.commit()
         return render_template("/studenthome.html")
     else:
+        print(2*"100")
         query = "select question_id from active_question_paper where question_paper_id= %s and attend='0' and stud_id =%s limit 1"
         cursor.execute(query, (session['paper'], session['id']))
         row = cursor.fetchone()
@@ -479,7 +484,9 @@ def quiz():
         row = cursor.fetchone()
         name = row[0] if row else None
         qtype = name
+        print(qtype)
         if qtype == 110 or qtype == 210 or qtype == 310:
+            print("type1"*10)
             query1 = "SELECT question_paper.question_paper_id,question_details.question_id,question_details. * from question_paper RIGHT JOIN question_details ON question_paper.question_id= question_details.question_id WHERE question_paper.question_paper_id ='%s' and question_paper.question_id='%s' "
             cursor.execute(query1, (session['paper'], session['quiz']))
             res = cursor.fetchall()
@@ -533,7 +540,14 @@ def settings():
 
 @app.route("/studentinterview.html")
 def studentinterview():
-    cursor = connection.cursor()
+    connectiontemp1 = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='',
+    db='Quiz_Database',
+    use_unicode=True,
+    charset="utf8")
+    cursor = connectiontemp1.cursor()
     qry = "select flag from student_profile where stud_id = {}"
     qry = qry.format(session['id'])
     print(qry)
@@ -546,9 +560,11 @@ def studentinterview():
         res = cursor.fetchone()[0]
         questions = res.split("&")
         questions = questions[:-1]
+        connectiontemp1.close()
         return render_template("/studentinterview.html",questions = questions)
     else:
-        flash("Please Wait!","Your interview is being generated. Approximately 30 mins.")
+        connectiontemp1.close()
+        flash("Please Wait! Your interview is being generated. Approximately 30 mins.")
         return render_template("/studenthome.html")
     
 
@@ -589,12 +605,20 @@ def post_answer():
     
 @app.route("/studentbeiinterview.html")
 def studentbeiinterview():
-    cursor = connection.cursor()
+    connectiontemp2 = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='',
+    db='Quiz_Database',
+    use_unicode=True,
+    charset="utf8")
+    cursor = connectiontemp2.cursor()
     qry = "select bei_flag from student_profile where stud_id = {}"
     qry = qry.format(session['id'])
     print(qry)
     cursor.execute(qry)
     res = cursor.fetchone()[0]
+    print(res)
     if int(res) == 1: 
         qry = "select bei_question from student_profile where stud_id = {}"
         qry = qry.format(session['id'])
@@ -602,9 +626,11 @@ def studentbeiinterview():
         res = cursor.fetchone()[0]
         questions = res.split("&")
         questions = questions[:-1]
+        connectiontemp2.close()
         return render_template("/studentbeiinterview.html",questions = questions)
     else:
-        flash("Please Wait!","Your interview is being generated. Approximately 30 mins.")
+        connectiontemp2.close()
+        flash("Please Wait! Your interview is being generated. Approximately 30 mins.")
         return render_template("/studenthome.html")
     
     
@@ -904,7 +930,7 @@ def bei_interview_gen():
         flash("Please complete Twitter Analysis first to proceed.")
         return render_template("/studenthome.html")
     personality = personality[0][0]
-    background_bei = Process(target= run_llm , args= (personality,id))
+    background_bei = Process(target= run_bei , args= (personality,id))
     background_bei.start()
     flash("Questions being generated. Thank you for your patience!!")
     return redirect("/studenthome.html")
@@ -1810,4 +1836,4 @@ def addfile(x):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True,use_reloader = False)

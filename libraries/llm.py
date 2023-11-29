@@ -206,5 +206,3 @@ def run_llm(path_to_res,id):
     qry = qry.format(1,id)
     cursor.execute(qry)
     connection.commit()
-
-

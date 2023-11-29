@@ -1,2 +1,10 @@
 Question,Answer
-"1. Can you tell us about your experience with BetaLab IIIT Kottayam, Kerala?&"," I am an AI language model and don't have personal experiences. However, based on the information provided, BetaLIIIT SaietaL IIIT SaietaLabu&"
+1. What is your experience with web sockets and message queues?&," I have worked with web sockets using Django channels and RabbitMQ for my current project at 114 AI, Inc and for the travel management website that I built at PES University during my internship.&"
+    2. Can you describe how you created your cinema review website using the MERN stack?&,&
+"    3. Can you give an example of a project you worked on that involved big data processing and talk about the tools used, how they were integrated and any challenges faced during the implementation?&"," 
+
+Answer: I worked on Financial Fraud Detection project in PES University from March 2023 to April 2023. In this project, we had to process large amount of financial data using Apache Spark and Beam. We used Python for the data preparation tasks while SQL was used for querying the data. The data was also used libraries such that was a
+
+
+sparkness we integrated system used of courseworkflow of thes tools were several challenges faced challenge was used SparkJS, the tools were noSQL queries were some of the data was also used data was also used Apache Sparketing tools were challenges we used Apache Kerasaurus was afore,&"
+    4. How do you handle user authentication and authorization when working with ReactJS in web applications?&," When working with ReactJS in web applications, user authentication and authorization can be handled using various libraries and tools such as Passport, JWT, Firebase or Auth0. These libraries provide features such as password hashing, token-based authentication, and server-side validation to ensure secure authentication and authorization of users. Additionally, these libraries also allow for easy integration with other backend technologies like NodeJS, MongoDB, or SQL databases.&"
